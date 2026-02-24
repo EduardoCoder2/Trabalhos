@@ -5,9 +5,7 @@
 #define TAM_NAVIO 3
 #define TAM_HABILIDADE 5
 
-// ================= FUNÇÕES =================
-
-// Inicializa o tabuleiro com água (0)
+// Inicializa tabuleiro com 0 (água)
 void inicializarTabuleiro(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO]) {
     for (int i = 0; i < TAM_TABULEIRO; i++) {
         for (int j = 0; j < TAM_TABULEIRO; j++) {
@@ -16,21 +14,21 @@ void inicializarTabuleiro(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO]) {
     }
 }
 
-// Valida se posição está dentro do tabuleiro
+// Verifica se está dentro dos limites
 int dentroDoLimite(int linha, int coluna) {
     return (linha >= 0 && linha < TAM_TABULEIRO &&
             coluna >= 0 && coluna < TAM_TABULEIRO);
 }
 
-// Posiciona navio
+// Posiciona navio com validação
 int posicionarNavio(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO],
                      int linha, int coluna,
-                     int direcaoLinha, int direcaoColuna) {
+                     int dirLinha, int dirColuna) {
 
-    // Verifica se cabe e não sobrepõe
+    // Verifica se pode posicionar
     for (int i = 0; i < TAM_NAVIO; i++) {
-        int novaLinha = linha + i * direcaoLinha;
-        int novaColuna = coluna + i * direcaoColuna;
+        int novaLinha = linha + i * dirLinha;
+        int novaColuna = coluna + i * dirColuna;
 
         if (!dentroDoLimite(novaLinha, novaColuna) ||
             tabuleiro[novaLinha][novaColuna] != 0) {
@@ -38,17 +36,17 @@ int posicionarNavio(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO],
         }
     }
 
-    // Posiciona navio
+    // Posiciona
     for (int i = 0; i < TAM_NAVIO; i++) {
-        int novaLinha = linha + i * direcaoLinha;
-        int novaColuna = coluna + i * direcaoColuna;
+        int novaLinha = linha + i * dirLinha;
+        int novaColuna = coluna + i * dirColuna;
         tabuleiro[novaLinha][novaColuna] = 3;
     }
 
-    return 1; // sucesso
+    return 1;
 }
 
-// Cria habilidade Cone
+// Cone (expandindo para baixo)
 void criarCone(int habilidade[TAM_HABILIDADE][TAM_HABILIDADE]) {
     int centro = TAM_HABILIDADE / 2;
 
@@ -63,7 +61,7 @@ void criarCone(int habilidade[TAM_HABILIDADE][TAM_HABILIDADE]) {
     }
 }
 
-// Cria habilidade Cruz
+// Cruz
 void criarCruz(int habilidade[TAM_HABILIDADE][TAM_HABILIDADE]) {
     int centro = TAM_HABILIDADE / 2;
 
@@ -78,7 +76,7 @@ void criarCruz(int habilidade[TAM_HABILIDADE][TAM_HABILIDADE]) {
     }
 }
 
-// Cria habilidade Octaedro (losango)
+// Octaedro (losango)
 void criarOctaedro(int habilidade[TAM_HABILIDADE][TAM_HABILIDADE]) {
     int centro = TAM_HABILIDADE / 2;
 
@@ -118,26 +116,18 @@ void aplicarHabilidade(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO],
     }
 }
 
-// Exibe tabuleiro
+// Exibe tabuleiro SOMENTE EM NÚMEROS
 void exibirTabuleiro(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO]) {
 
     printf("\n===== TABULEIRO =====\n\n");
 
     for (int i = 0; i < TAM_TABULEIRO; i++) {
         for (int j = 0; j < TAM_TABULEIRO; j++) {
-
-            if (tabuleiro[i][j] == 0)
-                printf("~ "); // Água
-            else if (tabuleiro[i][j] == 3)
-                printf("N "); // Navio
-            else if (tabuleiro[i][j] == 5)
-                printf("* "); // Habilidade
+            printf("%d ", tabuleiro[i][j]);
         }
         printf("\n");
     }
 }
-
-// ================= MAIN =================
 
 int main() {
 
@@ -148,23 +138,21 @@ int main() {
 
     inicializarTabuleiro(tabuleiro);
 
-    // ===== POSICIONANDO NAVIOS =====
+    // ===== NAVIOS =====
     posicionarNavio(tabuleiro, 1, 1, 0, 1);   // Horizontal
     posicionarNavio(tabuleiro, 5, 2, 1, 0);   // Vertical
     posicionarNavio(tabuleiro, 0, 7, 1, 1);   // Diagonal principal
     posicionarNavio(tabuleiro, 6, 9, 1, -1);  // Diagonal secundária
 
-    // ===== CRIANDO HABILIDADES =====
+    // ===== HABILIDADES =====
     criarCone(cone);
     criarCruz(cruz);
     criarOctaedro(octaedro);
 
-    // ===== APLICANDO HABILIDADES =====
     aplicarHabilidade(tabuleiro, cone, 2, 2);
     aplicarHabilidade(tabuleiro, cruz, 7, 3);
     aplicarHabilidade(tabuleiro, octaedro, 4, 7);
 
-    // ===== EXIBINDO TABULEIRO =====
     exibirTabuleiro(tabuleiro);
 
     return 0;
